@@ -62,7 +62,10 @@ const Navbar = () => {
                 <Link to="/notifications" className="text-gray-700 hover:text-blue-600 px-3 py-2 relative">
                   <FiBell className="w-5 h-5" />
                 </Link>
-                <Link to="/profile" className="text-gray-700 hover:text-blue-600 px-3 py-2">
+                <Link
+                  to={user.role === 'admin' ? '/admin/profile' : '/profile'}
+                  className="text-gray-700 hover:text-blue-600 px-3 py-2"
+                >
                   <FiUser className="w-5 h-5" />
                 </Link>
                 <button

@@ -17,6 +17,7 @@ import JobSeekerProfile from './pages/JobSeekerProfile';
 import RecruiterProfile from './pages/RecruiterProfile';
 import AdminVerifications from './pages/AdminVerifications';
 import AdminManageUsers from './pages/AdminManageUsers';
+import AdminProfile from './pages/AdminProfile';
 import SavedJobs from './pages/SavedJobs';
 import Notifications from './pages/Notifications';
 import PostJob from './pages/PostJob';
@@ -59,6 +60,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['admin']}>
                   <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/profile"
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminProfile />
                 </ProtectedRoute>
               }
             />

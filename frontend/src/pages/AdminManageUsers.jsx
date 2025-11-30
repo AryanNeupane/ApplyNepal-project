@@ -8,9 +8,11 @@ const AdminManageUsers = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [editForm, setEditForm] = useState({
     fullName: '',
+    companyName: '',
     email: '',
     phone: '',
-    isActive: true
+    isActive: true,
+    verificationStatus: 'pending'
   });
 
   useEffect(() => {
@@ -19,8 +21,22 @@ const AdminManageUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await api.get('/admin/users');
-      setUsers(response.data);
+      const [usersRes, recruitersRes] = await Promise.all([
+        api.get('/admin/users'),
+        api.get('/admin/recruiters')
+      ]);
+
+      const jobseekers = (usersRes.data || []).map(u => ({
+        ...u,
+        role: 'jobseeker'
+      }));
+
+      const recruiters = (recruitersRes.data || []).map(r => ({
+        ...r,
+        role: 'recruiter'
+      }));
+
+      setUsers([...jobseekers, ...recruiters]);
     } catch (error) {
       console.error('Error fetching users:', error);
     } finally {
@@ -32,19 +48,31 @@ const AdminManageUsers = () => {
     setEditingUser(user);
     setEditForm({
       fullName: user.fullName,
+      companyName: user.companyName || '',
       email: user.email,
       phone: user.phone,
-      isActive: user.isActive
+      isActive: user.isActive,
+      verificationStatus: user.verificationStatus || 'pending'
     });
   };
 
   const handleSaveEdit = async () => {
     try {
-      await api.put(`/admin/users/${editingUser._id}`, {
-        fullName: editForm.fullName,
-        phone: editForm.phone,
-        isActive: editForm.isActive
-      });
+      if (editingUser.role === 'recruiter') {
+        await api.put(`/admin/recruiters/${editingUser._id}`, {
+          fullName: editForm.fullName,
+          companyName: editForm.companyName,
+          phone: editForm.phone,
+          isActive: editForm.isActive,
+          verificationStatus: editForm.verificationStatus
+        });
+      } else {
+        await api.put(`/admin/users/${editingUser._id}`, {
+          fullName: editForm.fullName,
+          phone: editForm.phone,
+          isActive: editForm.isActive
+        });
+      }
       setEditingUser(null);
       fetchUsers();
       alert('User updated successfully');
@@ -55,7 +83,14 @@ const AdminManageUsers = () => {
 
   const handleToggleStatus = async (userId, currentStatus) => {
     try {
-      await api.put(`/admin/users/${userId}/status`, { isActive: !currentStatus });
+      const user = users.find(u => u._id === userId);
+      if (!user) return;
+
+      if (user.role === 'recruiter') {
+        await api.put(`/admin/recruiters/${userId}/status`, { isActive: !currentStatus });
+      } else {
+        await api.put(`/admin/users/${userId}/status`, { isActive: !currentStatus });
+      }
       fetchUsers();
     } catch (error) {
       alert('Error updating user status');
@@ -67,7 +102,14 @@ const AdminManageUsers = () => {
       return;
     }
     try {
-      await api.delete(`/admin/users/${userId}`);
+      const user = users.find(u => u._id === userId);
+      if (!user) return;
+
+      if (user.role === 'recruiter') {
+        await api.delete(`/admin/recruiters/${userId}`);
+      } else {
+        await api.delete(`/admin/users/${userId}`);
+      }
       fetchUsers();
       alert('User deleted successfully');
     } catch (error) {
@@ -76,8 +118,9 @@ const AdminManageUsers = () => {
   };
 
   const filteredUsers = users.filter(user =>
-    user.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    (user.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   if (loading) {
@@ -107,9 +150,11 @@ const AdminManageUsers = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name / Company</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Verification</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
               </tr>
@@ -118,13 +163,31 @@ const AdminManageUsers = () => {
               {filteredUsers.map((user) => (
                 <tr key={user._id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {user.fullName}
+                    {user.role === 'recruiter' ? (user.companyName || user.fullName) : user.fullName}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {user.email}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {user.phone}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {user.role === 'recruiter' ? 'Recruiter' : 'Job Seeker'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    {user.role === 'recruiter' ? (
+                      <span className={`px-2 py-1 text-xs font-semibold rounded ${
+                        user.verificationStatus === 'verified'
+                          ? 'bg-green-100 text-green-800'
+                          : user.verificationStatus === 'rejected'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {user.verificationStatus || 'pending'}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-gray-400">N/A</span>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 text-xs font-semibold rounded ${
@@ -170,7 +233,9 @@ const AdminManageUsers = () => {
         {editingUser && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
-              <h3 className="text-xl font-semibold mb-4">Edit User</h3>
+              <h3 className="text-xl font-semibold mb-4">
+                Edit {editingUser.role === 'recruiter' ? 'Recruiter' : 'User'}
+              </h3>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
@@ -181,6 +246,17 @@ const AdminManageUsers = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
+                {editingUser.role === 'recruiter' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                    <input
+                      type="text"
+                      value={editForm.companyName}
+                      onChange={(e) => setEditForm({ ...editForm, companyName: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                   <input
@@ -199,6 +275,20 @@ const AdminManageUsers = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
+                {editingUser.role === 'recruiter' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Verification Status</label>
+                    <select
+                      value={editForm.verificationStatus}
+                      onChange={(e) => setEditForm({ ...editForm, verificationStatus: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="verified">Verified</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
+                  </div>
+                )}
                 <div>
                   <label className="flex items-center">
                     <input
