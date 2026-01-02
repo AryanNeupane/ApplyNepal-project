@@ -2,7 +2,21 @@ import Job from '../models/Job.js';
 import Application from '../models/Application.js';
 import Recruiter from '../models/Recruiter.js';
 import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 import mongoose from 'mongoose';
+
+const cleanupExpiredJobs = async () => {
+  const now = new Date();
+  const expiredJobs = await Job.find({ deadline: { $lt: now } }).select('_id');
+
+  if (!expiredJobs.length) return;
+
+  const expiredJobIds = expiredJobs.map(job => job._id);
+
+  await Application.deleteMany({ job: { $in: expiredJobIds } });
+  await Notification.deleteMany({ relatedJob: { $in: expiredJobIds } });
+  await Job.deleteMany({ _id: { $in: expiredJobIds } });
+};
 
 export const getAllJobs = async (req, res) => {
   try {
@@ -16,6 +30,9 @@ export const getAllJobs = async (req, res) => {
       jobType,
       search
     } = req.query;
+
+    // Clean up expired jobs before querying
+    await cleanupExpiredJobs();
 
     // Allow admin to see all jobs, others see only active
     let query = {};
@@ -93,6 +110,15 @@ export const createJob = async (req, res) => {
       return res.status(403).json({ message: 'Company must be verified to post jobs' });
     }
 
+    const { salaryRange } = req.body;
+    if (salaryRange) {
+      const min = parseInt(salaryRange.min);
+      const max = parseInt(salaryRange.max);
+      if (Number.isFinite(min) && Number.isFinite(max) && min > max) {
+        return res.status(400).json({ message: 'Minimum salary cannot be greater than maximum salary' });
+      }
+    }
+
     const job = await Job.create({
       ...req.body,
       postedBy: req.user._id,
@@ -115,6 +141,15 @@ export const updateJob = async (req, res) => {
 
     if (job.postedBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to update this job' });
+    }
+
+    const { salaryRange } = req.body;
+    if (salaryRange) {
+      const min = parseInt(salaryRange.min);
+      const max = parseInt(salaryRange.max);
+      if (Number.isFinite(min) && Number.isFinite(max) && min > max) {
+        return res.status(400).json({ message: 'Minimum salary cannot be greater than maximum salary' });
+      }
     }
 
     const updatedJob = await Job.findByIdAndUpdate(
@@ -143,6 +178,7 @@ export const deleteJob = async (req, res) => {
 
     await Job.findByIdAndDelete(req.params.id);
     await Application.deleteMany({ job: req.params.id });
+    await Notification.deleteMany({ relatedJob: req.params.id });
 
     res.json({ message: 'Job deleted successfully' });
   } catch (error) {
@@ -152,6 +188,8 @@ export const deleteJob = async (req, res) => {
 
 export const getRecommendedJobs = async (req, res) => {
   try {
+    await cleanupExpiredJobs();
+
     const user = await User.findById(req.user._id);
     
     if (!user.skills || user.skills.length === 0) {

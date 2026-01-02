@@ -86,9 +86,23 @@ const EditJob = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
     setError('');
     setMessage('');
+
+    const min = parseInt(formData.salaryRange.min);
+    const max = parseInt(formData.salaryRange.max);
+
+    if (!Number.isFinite(min) || !Number.isFinite(max) || min <= 0 || max <= 0) {
+      setError('Please enter valid salary amounts greater than 0');
+      return;
+    }
+
+    if (min > max) {
+      setError('Minimum salary cannot be greater than maximum salary');
+      return;
+    }
+
+    setSaving(true);
 
     try {
       const jobData = {

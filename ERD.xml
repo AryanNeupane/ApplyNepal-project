@@ -1,0 +1,51 @@
+<mxfile host="app.diagrams.net" modified="2025-12-22T00:00:00Z" agent="Cascade" version="24.0.0" editor="www.draw.io" type="device"><diagram id="ERD" name="ERD"><mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/>
+  <!-- User Entity -->
+  <mxCell id="user" value="User|_id (ObjectId) [PK];fullName;email [unique];password;phone;role='jobseeker';skills[];experience;profilePhoto;resume;savedJobs[];isActive;createdAt;updatedAt" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;resizeLast=0;rounded=1;shadow=0;strokeColor=#000000;align=left;verticalAlign=top;labelPosition=center;verticalLabelPosition=top;startSize=30;fillColor=#dae8fc;gradientColor=none;" vertex="1"><mxGeometry x="40" y="40" width="260" height="220" as="geometry"/></mxCell>
+
+  <!-- Recruiter Entity -->
+  <mxCell id="recruiter" value="Recruiter|_id (ObjectId) [PK];fullName;email [unique];password;phone;role='recruiter';companyName;companyDescription;companyAddress;companyWebsite;verificationStatus;verificationDocuments[];isActive;createdAt;updatedAt" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;resizeLast=0;rounded=1;shadow=0;strokeColor=#000000;align=left;verticalAlign=top;labelPosition=center;verticalLabelPosition=top;startSize=30;fillColor=#ffe6cc;gradientColor=none;" vertex="1"><mxGeometry x="360" y="40" width="300" height="240" as="geometry"/></mxCell>
+
+  <!-- Admin Entity -->
+  <mxCell id="admin" value="Admin|_id (ObjectId) [PK];name;email [unique];password;role='admin';isActive;createdAt;updatedAt" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;resizeLast=0;rounded=1;shadow=0;strokeColor=#000000;align=left;verticalAlign=top;labelPosition=center;verticalLabelPosition=top;startSize=30;fillColor=#fff2cc;gradientColor=none;" vertex="1"><mxGeometry x="720" y="40" width="260" height="180" as="geometry"/></mxCell>
+
+  <!-- Job Entity -->
+  <mxCell id="job" value="Job|_id (ObjectId) [PK];title;description;skillsRequired[];salaryRange.min;salaryRange.max;experienceRequired;jobType;location;category;companyName;deadline;postedBy [FK Recruiter._id];isActive;applications[];createdAt;updatedAt" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;resizeLast=0;rounded=1;shadow=0;strokeColor=#000000;align=left;verticalAlign=top;labelPosition=center;verticalLabelPosition=top;startSize=30;fillColor=#e1d5e7;gradientColor=none;" vertex="1"><mxGeometry x="40" y="300" width="320" height="260" as="geometry"/></mxCell>
+
+  <!-- Application Entity -->
+  <mxCell id="application" value="Application|_id (ObjectId) [PK];job [FK Job._id];applicant [FK User._id];resume (path);status;notes;appliedAt;createdAt;updatedAt" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;resizeLast=0;rounded=1;shadow=0;strokeColor=#000000;align=left;verticalAlign=top;labelPosition=center;verticalLabelPosition=top;startSize=30;fillColor=#d5e8d4;gradientColor=none;" vertex="1"><mxGeometry x="420" y="320" width="260" height="200" as="geometry"/></mxCell>
+
+  <!-- CompanyVerification Entity -->
+  <mxCell id="companyVerification" value="CompanyVerification|_id (ObjectId) [PK];recruiter [FK Recruiter._id, unique];documents[] (filename,path,uploadedAt);status;reviewedBy [FK Admin._id];reviewedAt;rejectionReason;createdAt;updatedAt" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;resizeLast=0;rounded=1;shadow=0;strokeColor=#000000;align=left;verticalAlign=top;labelPosition=center;verticalLabelPosition=top;startSize=30;fillColor=#f8cecc;gradientColor=none;" vertex="1"><mxGeometry x="720" y="260" width="320" height="220" as="geometry"/></mxCell>
+
+  <!-- Notification Entity -->
+  <mxCell id="notification" value="Notification|_id (ObjectId) [PK];recipient [FK User._id/Recruiter._id];recipientModel ('User'|'Recruiter');type;title;message;relatedJob [FK Job._id];relatedApplication [FK Application._id];isRead;createdAt;updatedAt" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;resizeLast=0;rounded=1;shadow=0;strokeColor=#000000;align=left;verticalAlign=top;labelPosition=center;verticalLabelPosition=top;startSize=30;fillColor=#f5f5f5;gradientColor=none;" vertex="1"><mxGeometry x="420" y="560" width="320" height="220" as="geometry"/></mxCell>
+
+  <!-- Relationships -->
+  <!-- Recruiter 1 - * Job -->
+  <mxCell id="rel_recruiter_job" edge="1" parent="1" source="recruiter" target="job" style="endArrow=block;endFill=1;startArrow=oval;startFill=0;strokeColor=#000000;"><mxGeometry relative="1" as="geometry"><mxPoint x="360" y="260" as="sourcePoint"/><mxPoint x="200" y="300" as="targetPoint"/></mxGeometry></mxCell>
+
+  <!-- Job 1 - * Application -->
+  <mxCell id="rel_job_application" edge="1" parent="1" source="job" target="application" style="endArrow=block;endFill=1;startArrow=oval;startFill=0;strokeColor=#000000;"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+  <!-- User 1 - * Application -->
+  <mxCell id="rel_user_application" edge="1" parent="1" source="user" target="application" style="endArrow=block;endFill=1;startArrow=oval;startFill=0;strokeColor=#000000;"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+  <!-- User 1 - * Notification -->
+  <mxCell id="rel_user_notification" edge="1" parent="1" source="user" target="notification" style="endArrow=block;endFill=1;startArrow=oval;startFill=0;strokeColor=#000000;dashed=1;"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+  <!-- Recruiter 1 - * Notification -->
+  <mxCell id="rel_recruiter_notification" edge="1" parent="1" source="recruiter" target="notification" style="endArrow=block;endFill=1;startArrow=oval;startFill=0;strokeColor=#000000;dashed=1;"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+  <!-- Recruiter 1 - 1 CompanyVerification -->
+  <mxCell id="rel_recruiter_companyVerification" edge="1" parent="1" source="recruiter" target="companyVerification" style="endArrow=block;endFill=1;startArrow=block;startFill=0;strokeColor=#000000;"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+  <!-- Admin 1 - * CompanyVerification (reviewedBy) -->
+  <mxCell id="rel_admin_companyVerification" edge="1" parent="1" source="admin" target="companyVerification" style="endArrow=block;endFill=1;startArrow=oval;startFill=0;strokeColor=#000000;dashed=1;"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+  <!-- Job 1 - * Notification (relatedJob) -->
+  <mxCell id="rel_job_notification" edge="1" parent="1" source="job" target="notification" style="endArrow=block;endFill=1;startArrow=oval;startFill=0;strokeColor=#000000;dashed=1;"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+  <!-- Application 1 - * Notification (relatedApplication) -->
+  <mxCell id="rel_application_notification" edge="1" parent="1" source="application" target="notification" style="endArrow=block;endFill=1;startArrow=oval;startFill=0;strokeColor=#000000;dashed=1;"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+</root></mxGraphModel></diagram></mxfile>

@@ -1,0 +1,74 @@
+<mxfile host="app.diagrams.net" modified="2025-12-22T00:00:00Z" agent="Cascade" version="24.0.0" editor="www.draw.io" type="device"><diagram id="UseCase" name="UseCaseDiagram"><mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/>
+
+  <!-- System Boundary -->
+  <mxCell id="system_boundary" value="ApplyNepal Job Portal" style="swimlane;rounded=1;strokeColor=#000000;fillColor=#ffffff;horizontal=1;startSize=20;" vertex="1" parent="1"><mxGeometry x="220" y="40" width="560" height="520" as="geometry"/></mxCell>
+
+  <!-- Actors -->
+  <mxCell id="actor_jobseeker" value="Job Seeker" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1"><mxGeometry x="40" y="120" width="40" height="80" as="geometry"/></mxCell>
+
+  <mxCell id="actor_recruiter" value="Recruiter" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1"><mxGeometry x="40" y="260" width="40" height="80" as="geometry"/></mxCell>
+
+  <mxCell id="actor_admin" value="Admin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1"><mxGeometry x="40" y="400" width="40" height="80" as="geometry"/></mxCell>
+
+  <!-- Use Cases inside System Boundary -->
+  <mxCell id="uc_register_login" value="Register / Login" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="system_boundary"><mxGeometry x="210" y="40" width="140" height="50" as="geometry"/></mxCell>
+
+  <mxCell id="uc_post_job" value="Post Job" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="system_boundary"><mxGeometry x="360" y="120" width="120" height="50" as="geometry"/></mxCell>
+
+  <mxCell id="uc_apply_job" value="Apply Job" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="system_boundary"><mxGeometry x="60" y="140" width="120" height="50" as="geometry"/></mxCell>
+
+  <mxCell id="uc_upload_resume" value="Upload Resume" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="system_boundary"><mxGeometry x="60" y="220" width="130" height="50" as="geometry"/></mxCell>
+
+  <mxCell id="uc_view_applicants" value="View Applicants" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="system_boundary"><mxGeometry x="360" y="200" width="140" height="50" as="geometry"/></mxCell>
+
+  <mxCell id="uc_verify_recruiter" value="Verify Recruiter" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="system_boundary"><mxGeometry x="360" y="280" width="150" height="50" as="geometry"/></mxCell>
+
+  <mxCell id="uc_manage_users" value="Manage Users" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="system_boundary"><mxGeometry x="210" y="320" width="130" height="50" as="geometry"/></mxCell>
+
+  <mxCell id="uc_manage_jobs" value="Manage Jobs" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="system_boundary"><mxGeometry x="210" y="400" width="130" height="50" as="geometry"/></mxCell>
+
+  <mxCell id="uc_manage_profile" value="Manage Profile" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="system_boundary"><mxGeometry x="60" y="300" width="130" height="50" as="geometry"/></mxCell>
+
+  <!-- Associations: Job Seeker -->
+  <mxCell id="e_actor_js_register" edge="1" parent="1" source="actor_jobseeker" target="uc_register_login" style="endArrow=none;">
+    <mxGeometry relative="1" as="geometry"/>
+  </mxCell>
+  <mxCell id="e_actor_js_apply" edge="1" parent="1" source="actor_jobseeker" target="uc_apply_job" style="endArrow=none;">
+    <mxGeometry relative="1" as="geometry"/>
+  </mxCell>
+  <mxCell id="e_actor_js_upload_resume" edge="1" parent="1" source="actor_jobseeker" target="uc_upload_resume" style="endArrow=none;">
+    <mxGeometry relative="1" as="geometry"/>
+  </mxCell>
+  <mxCell id="e_actor_js_manage_profile" edge="1" parent="1" source="actor_jobseeker" target="uc_manage_profile" style="endArrow=none;">
+    <mxGeometry relative="1" as="geometry"/>
+  </mxCell>
+
+  <!-- Associations: Recruiter -->
+  <mxCell id="e_actor_rec_register" edge="1" parent="1" source="actor_recruiter" target="uc_register_login" style="endArrow=none;">
+    <mxGeometry relative="1" as="geometry"/>
+  </mxCell>
+  <mxCell id="e_actor_rec_post_job" edge="1" parent="1" source="actor_recruiter" target="uc_post_job" style="endArrow=none;">
+    <mxGeometry relative="1" as="geometry"/>
+  </mxCell>
+  <mxCell id="e_actor_rec_view_applicants" edge="1" parent="1" source="actor_recruiter" target="uc_view_applicants" style="endArrow=none;">
+    <mxGeometry relative="1" as="geometry"/>
+  </mxCell>
+  <mxCell id="e_actor_rec_manage_profile" edge="1" parent="1" source="actor_recruiter" target="uc_manage_profile" style="endArrow=none;dashed=1;">
+    <mxGeometry relative="1" as="geometry"/>
+  </mxCell>
+
+  <!-- Associations: Admin -->
+  <mxCell id="e_actor_admin_register" edge="1" parent="1" source="actor_admin" target="uc_register_login" style="endArrow=none;">
+    <mxGeometry relative="1" as="geometry"/>
+  </mxCell>
+  <mxCell id="e_actor_admin_verify_recruiter" edge="1" parent="1" source="actor_admin" target="uc_verify_recruiter" style="endArrow=none;">
+    <mxGeometry relative="1" as="geometry"/>
+  </mxCell>
+  <mxCell id="e_actor_admin_manage_users" edge="1" parent="1" source="actor_admin" target="uc_manage_users" style="endArrow=none;">
+    <mxGeometry relative="1" as="geometry"/>
+  </mxCell>
+  <mxCell id="e_actor_admin_manage_jobs" edge="1" parent="1" source="actor_admin" target="uc_manage_jobs" style="endArrow=none;">
+    <mxGeometry relative="1" as="geometry"/>
+  </mxCell>
+
+</root></mxGraphModel></diagram></mxfile>

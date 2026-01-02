@@ -1,0 +1,53 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Activity Diagram">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Start -->
+        <mxCell id="start" style="ellipse;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="100" y="40" width="20" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Browse Jobs -->
+        <mxCell id="browse" value="Browse Jobs" style="rounded=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="60" y="90" width="140" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- View Job -->
+        <mxCell id="view" value="View Job Details" style="rounded=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="60" y="160" width="140" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Apply -->
+        <mxCell id="apply" value="Apply Job" style="rounded=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="60" y="230" width="140" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- End -->
+        <mxCell id="end" style="ellipse;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="100" y="310" width="20" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e1" edge="1" parent="1" source="start" target="browse">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e2" edge="1" parent="1" source="browse" target="view">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e3" edge="1" parent="1" source="view" target="apply">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e4" edge="1" parent="1" source="apply" target="end">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -21,7 +21,16 @@ const jobSchema = new mongoose.Schema({
     },
     max: {
       type: Number,
-      required: [true, 'Maximum salary is required']
+      required: [true, 'Maximum salary is required'],
+      validate: {
+        validator: function (value) {
+          if (this.salaryRange && typeof this.salaryRange.min === 'number') {
+            return value >= this.salaryRange.min;
+          }
+          return true;
+        },
+        message: 'Maximum salary must be greater than or equal to minimum salary'
+      }
     }
   },
   experienceRequired: {

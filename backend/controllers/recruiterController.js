@@ -2,6 +2,7 @@ import Recruiter from '../models/Recruiter.js';
 import CompanyVerification from '../models/CompanyVerification.js';
 import Job from '../models/Job.js';
 import Application from '../models/Application.js';
+import Notification from '../models/Notification.js';
 import path from 'path';
 import fs from 'fs';
 
@@ -113,6 +114,16 @@ export const uploadVerificationDocuments = async (req, res) => {
 
 export const getRecruiterJobs = async (req, res) => {
   try {
+    const now = new Date();
+    const expiredJobs = await Job.find({ postedBy: req.user._id, deadline: { $lt: now } }).select('_id');
+
+    if (expiredJobs.length) {
+      const expiredJobIds = expiredJobs.map(job => job._id);
+      await Application.deleteMany({ job: { $in: expiredJobIds } });
+      await Notification.deleteMany({ relatedJob: { $in: expiredJobIds } });
+      await Job.deleteMany({ _id: { $in: expiredJobIds } });
+    }
+
     const jobs = await Job.find({ postedBy: req.user._id })
       .populate('applications')
       .sort({ createdAt: -1 });
